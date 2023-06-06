@@ -55,7 +55,7 @@ def get_network(plann_steps_max=10):
     G.nodes["EWS"]["type"] = "measure"
 
     # Upload muskingum params:
-    Muskingum_params = pd.read_excel("./data/Muskingum/params.xlsx", index_col=0)
+    Muskingum_params = pd.read_excel("./data/muskingum/params.xlsx", index_col=0)
 
     # Fill network with crucial info:
     for dike in dike_list:

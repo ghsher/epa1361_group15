@@ -62,3 +62,4 @@ if __name__ == "__main__":
     ax1.set_xlabel("nr. of generations")
     ax1.set_ylabel(r"$\epsilon$ progress")
     sns.despine()
+    plt.show()
