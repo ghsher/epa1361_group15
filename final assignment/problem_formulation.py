@@ -373,8 +373,8 @@ def get_model_for_problem_formulation(problem_formulation_id):
 
     # CLIENT WANTS: 
     # Disaggregated (want to know local differences):
-    #   Damages per Dike Ring (Rings 1, 2, 4, 5)
-    #   Deaths per Dike Ring (Rings 1, 2, 4, 5)
+    #   Damages per Dike Ring (Rings 1, 2, 3, 4, 5)
+    #   Deaths per Dike Ring (Rings 1, 2, 3, 4, 5)
     # Shared Costs:
     #   Total RFR cost + Sum of all Dike Heightening costs
     #   (Assume Rijkswaterstraat is footing the bill)
@@ -387,9 +387,6 @@ def get_model_for_problem_formulation(problem_formulation_id):
         outcomes = []
 
         for dike in function.dikelist:
-            if dike == "A.3":
-                continue
-
             for entry in [
                 "Expected Annual Damage",
                 "Expected Number of Deaths",
@@ -417,8 +414,6 @@ def get_model_for_problem_formulation(problem_formulation_id):
         outcomes = []
 
         for dike in function.dikelist:
-            if dike == "A.3":
-                continue
             outcomes.append(
                 ScalarOutcome(
                     f"{dike} Expected Annual Damage",
