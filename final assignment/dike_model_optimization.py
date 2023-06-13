@@ -7,6 +7,7 @@ from ema_workbench import (
     Scenario,
 )
 from ema_workbench.em_framework.optimization import EpsilonProgress
+from ema_workbench.em_framework.outcomes import AbstractOutcome
 from ema_workbench.util import ema_logging
 
 from problem_formulation import get_model_for_problem_formulation
@@ -17,7 +18,7 @@ import seaborn as sns
 if __name__ == "__main__":
     ema_logging.log_to_stderr(ema_logging.INFO)
 
-    model, steps = get_model_for_problem_formulation(2)
+    model, steps = get_model_for_problem_formulation(6)
 
     reference_values = {
         "Bmax": 175,
@@ -43,7 +44,7 @@ if __name__ == "__main__":
 
     convergence_metrics = [EpsilonProgress()]
 
-    espilon = [1e3] * len(model.outcomes)
+    espilon = [1e3] * len([outcome for outcome in model.outcomes if outcome.kind != AbstractOutcome.INFO])
 
     nfe = 200  # proof of principle only, way to low for actual use
 
