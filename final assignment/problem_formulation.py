@@ -371,68 +371,52 @@ def get_model_for_problem_formulation(problem_formulation_id):
         dike_model.outcomes = outcomes
 
 
-    # CLIENT WANTS: 
-    # Disaggregated (want to know local differences):
-    #   Damages per Dike Ring (Rings 1, 2, 3, 4, 5)
-    #   Deaths per Dike Ring (Rings 1, 2, 3, 4, 5)
-    # Shared Costs:
-    #   Total RFR cost + Sum of all Dike Heightening costs
-    #   (Assume Rijkswaterstraat is footing the bill)
-    # Mostly interested in impact of Infrastructural changes, so ignoring Evac
-    #   Can add later it as a separate cost bc it is not Infra
-    
-    
-    # CUSTOM CASE #1: Disaggregated over time
+    # OUTCOMES OF INTEREST:
+    # In Open Exploration, we care about (5 total):
+    #   Deaths to DR4
+    #   Damages in DR4
+    #   Total infrastructure costs (all DRs)
+    #   Total deaths (all DRs)
+    #   Total damages (all DRs)
+    # In DS, we care about (13 total) (some will be set kind=info so they are ignored by optimizer):
+    #   Deaths per DR (DRs 1, 2, 3, 5 := info)
+    #   Damages per DR (DRs 1, 2, 3, 5 := info)
+    #   Total infrastructure costs (all DRs)
+    #   Total deaths (all DRs)
+    #   Total damages (all DRs)
+    # Thus, we can assemble one Problem Formulation that includes all of the
+    #  above and set kind=INFO where relevant (kind defaults to INFO) for DS
+    #  and simply drop those columns from the outputs for OE as desired
+
     elif problem_formulation_id == 6:
         outcomes = []
 
+        # Disaggregated Deaths and Damages
         for dike in function.dikelist:
             for entry in [
                 "Expected Annual Damage",
                 "Expected Number of Deaths",
             ]:
+                if dike == "A.4":
+                    outcomes.append(
+                        ScalarOutcome(
+                            f"{dike} {entry}",
+                            variable_name=f"{dike}_{entry}",
+                            function=sum_over,
+                            kind=direction,
+                        )
+                    )
 
-                o = ArrayOutcome(f"{dike}_{entry}")
-                outcomes.append(o)
+                else:
+                    outcomes.append(
+                        ScalarOutcome(
+                            f"{dike} {entry}",
+                            variable_name=f"{dike}_{entry}",
+                            function=sum_over,
+                        )
+                    )
 
-        outcomes.append(ArrayOutcome("RfR Total Costs"))
-
-        outcomes.append(
-            ArrayOutcome(
-                f"Dike Investment Costs",
-                variable_name=[
-                    f"{dike}_Dike Investment Costs" for dike in function.dikelist
-                ],
-                function=sum_over_time,
-            )
-        )
-        dike_model.outcomes = outcomes
-
-
-    # CUSTOM CASE #2: Aggregated over time
-    elif problem_formulation_id == 7:
-        outcomes = []
-
-        for dike in function.dikelist:
-            outcomes.append(
-                ScalarOutcome(
-                    f"{dike} Expected Annual Damage",
-                    variable_name=f"{dike}_Expected Annual Damage",
-                    function=sum_over,
-                    kind=direction,
-                )
-            )
-
-            outcomes.append(
-                ScalarOutcome(
-                    f"{dike} Expected Number of Deaths",
-                    variable_name=f"{dike}_Expected Number of Deaths",
-                    function=sum_over,
-                    kind=direction,
-                )
-            )
-
-
+        # Aggregated Costs
         cost_variables = []
         cost_variables.extend(
             [f"{dike}_Dike Investment Costs" for dike in function.dikelist]
@@ -448,7 +432,36 @@ def get_model_for_problem_formulation(problem_formulation_id):
             )
         )
 
+        # Aggregated Deaths and Damages
+        total_damage_variables = []
+        total_damage_variables.extend(
+            [f"{dike}_Expected Annual Damage" for dike in function.dikelist]
+        )
+
+        total_casualty_variables = []
+        total_casualty_variables.extend(
+            [f"{dike}_Expected Number of Deaths" for dike in function.dikelist]
+        )
+
+        outcomes.append(
+            ScalarOutcome(
+                "Total Expected Annual Damage",
+                variable_name=[var for var in total_damage_variables],
+                function=sum_over,
+                kind=direction,
+            )
+        )
+        outcomes.append(
+            ScalarOutcome(
+                "Total Expected Number of Deaths",
+                variable_name=[var for var in total_casualty_variables],
+                function=sum_over,
+                kind=direction,
+            )
+        )
+
         dike_model.outcomes = outcomes
+
     else:
         raise TypeError("unknown identifier")
 
