@@ -50,8 +50,8 @@ if __name__ == "__main__":
     espilon = [100, 0.01, 100, 100, 0.01]
 
     # nfe = 100  # proof of principle only, way to low for actual use
-    nfe = 40000 # <- this is what Agnes will run on 14.06, should take around 5h
-    #nfe = 400 # <- this is good for test runs <5min
+    # nfe = 40000 <- this is what Agnes will run on 14.06, should take arounf 5h
+    nfe = 400 # <- this is good for test runs <5min
     # nfe's in Nicolo's Paper: 100K, Paper Fotini: 40K
 
     # we need to store our results for each seed
