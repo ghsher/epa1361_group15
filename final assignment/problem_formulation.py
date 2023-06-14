@@ -527,6 +527,71 @@ def get_model_for_problem_formulation(problem_formulation_id):
 
         dike_model.outcomes = outcomes
 
+        # get all 13 outcomes to apply relative constraints on the pareto dominant policies
+    elif problem_formulation_id == 8:
+        outcomes = []
+
+        # Disaggregated Deaths and Damages
+        for dike in function.dikelist:
+            for entry in [
+                "Expected Annual Damage",
+                "Expected Number of Deaths",
+            ]:
+                outcomes.append(
+                    ScalarOutcome(
+                        f"{dike} {entry}",
+                        variable_name=f"{dike}_{entry}",
+                        function=sum_over,
+                        kind=direction,
+                    )
+                )
+
+        # Aggregated Costs
+        cost_variables = []
+        cost_variables.extend(
+            [f"{dike}_Dike Investment Costs" for dike in function.dikelist]
+        )
+        cost_variables.extend([f"RfR Total Costs"])
+
+        outcomes.append(
+            ScalarOutcome(
+                "Total Infrastructure Costs",
+                variable_name=[var for var in cost_variables],
+                function=sum_over,
+                kind=direction,
+            )
+        )
+
+        # Aggregated Deaths and Damages
+        total_damage_variables = []
+        total_damage_variables.extend(
+            [f"{dike}_Expected Annual Damage" for dike in function.dikelist]
+        )
+
+        total_casualty_variables = []
+        total_casualty_variables.extend(
+            [f"{dike}_Expected Number of Deaths" for dike in function.dikelist]
+        )
+
+        outcomes.append(
+            ScalarOutcome(
+                "Total Expected Annual Damage",
+                variable_name=[var for var in total_damage_variables],
+                function=sum_over,
+                kind=direction,
+            )
+        )
+        outcomes.append(
+            ScalarOutcome(
+                "Total Expected Number of Deaths",
+                variable_name=[var for var in total_casualty_variables],
+                function=sum_over,
+                kind=direction,
+            )
+        )
+
+        dike_model.outcomes = outcomes
+
     else:
         raise TypeError("unknown identifier")
 
