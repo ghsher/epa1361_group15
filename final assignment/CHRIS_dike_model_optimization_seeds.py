@@ -6,6 +6,7 @@ from ema_workbench import (
     optimize,
     Scenario,
 )
+
 from ema_workbench.em_framework.optimization import EpsilonProgress
 from ema_workbench.em_framework.outcomes import AbstractOutcome
 from ema_workbench.util import ema_logging
@@ -51,25 +52,25 @@ if __name__ == "__main__":
     model = Model("dikesnet", function=function)
 
     model.uncertainties = [
-        RealParameter("A.1_Bmax", 30, 350),
-        RealParameter("A.1_pfail", 0, 1),
-        CategoricalParameter("A.1_Brate", [1.0, 1.5, 10]),
-        RealParameter("A.2_Bmax", 30, 350),
-        RealParameter("A.2_pfail", 0, 1),
-        CategoricalParameter("A.2_Brate", [1.0, 1.5, 10]),
-        RealParameter("A.3_Bmax", 30, 350),
-        RealParameter("A.3_pfail", 0, 1),
-        CategoricalParameter("A.3_Brate", [1.0, 1.5, 10]),
-        RealParameter("A.4_Bmax", 30, 350),
-        RealParameter("A.4_pfail", 0, 1),
-        CategoricalParameter("A.4_Brate", [1.0, 1.5, 10]),
-        RealParameter("A.5_Bmax", 30, 350),
-        RealParameter("A.5_pfail", 0, 1),
-        CategoricalParameter("A.5_Brate", [1.0, 1.5, 10]),
-        CategoricalParameter("discount rate 0", (1.5, 2.5, 3.5, 4.5)),
-        CategoricalParameter("discount rate 1", (1.5, 2.5, 3.5, 4.5)),
-        CategoricalParameter("discount rate 2", (1.5, 2.5, 3.5, 4.5)),
-        IntegerParameter("A.0_ID flood wave shape", 0, 132),
+        RealParameter("A1_Bmax", 30, 350, variable_name="A.1_Bmax"),
+        RealParameter("A1_pfail", 0, 1, variable_name="A.1_pfail"),
+        CategoricalParameter("A1_Brate", [1.0, 1.5, 10], variable_name="A.1_Brate"),
+        RealParameter("A2_Bmax", 30, 350, variable_name="A.2_Bmax"),
+        RealParameter("A2_pfail", 0, 1, variable_name="A.2_pfail"),
+        CategoricalParameter("A2_Brate", [1.0, 1.5, 10], variable_name="A.2_Brate"),
+        RealParameter("A3_Bmax", 30, 350, variable_name="A.3_Bmax"),
+        RealParameter("A3_pfail", 0, 1, variable_name="A.3_pfail"),
+        CategoricalParameter("A3_Brate", [1.0, 1.5, 10], variable_name="A.3_Brate"),
+        RealParameter("A4_Bmax", 30, 350, variable_name="A.4_Bmax"),
+        RealParameter("A4_pfail", 0, 1, variable_name="A.4_pfail"),
+        CategoricalParameter("A4_Brate", [1.0, 1.5, 10], variable_name="A.4_Brate"),
+        RealParameter("A5_Bmax", 30, 350, variable_name="A.5_Bmax"),
+        RealParameter("A5_pfail", 0, 1, variable_name="A.5_pfail"),
+        CategoricalParameter("A5_Brate", [1.0, 1.5, 10], variable_name="A.5_Brate"),
+        CategoricalParameter("discount_rate_0", (1.5, 2.5, 3.5, 4.5), variable_name="discount rate 0"),
+        CategoricalParameter("discount_rate_1", (1.5, 2.5, 3.5, 4.5), variable_name="discount rate 1"),
+        CategoricalParameter("discount_rate_2", (1.5, 2.5, 3.5, 4.5), variable_name="discount rate 2"),
+        IntegerParameter("A0_ID_flood_wave_shape", 0, 132, variable_name="A.0_ID flood wave shape"),
     ]
 
     model.levers = [
@@ -148,8 +149,8 @@ if __name__ == "__main__":
             if dike == "A.4":
                 outcomes.append(
                     ScalarOutcome(
-                        f"A_4_{entry}",
-                        variable_name=f"A_4_{entry}",
+                        f"A4_{entry}",
+                        variable_name=f"{dike}_{entry}",
                         function=sum_over,
                         kind=direction,
                     )
@@ -174,12 +175,12 @@ if __name__ == "__main__":
     # Aggregated Deaths and Damages
     total_damage_variables = []
     total_damage_variables.extend(
-        [f"{dike}_Expected_Annual_Damage" for dike in function.dikelist]
+        [f"{dike}_Expected Annual Damage" for dike in function.dikelist]
     )
 
     total_casualty_variables = []
     total_casualty_variables.extend(
-        [f"{dike}_Expected_Number_of_Deaths" for dike in function.dikelist]
+        [f"{dike}_Expected Number of Deaths" for dike in function.dikelist]
     )
 
     outcomes.append(
@@ -201,27 +202,27 @@ if __name__ == "__main__":
 
     model.outcomes = outcomes
     problem = to_problem(model, searchover="levers")
-    print(problem.outcome_names)
-    print(problem.parameter_names)
 
     reference_values = {
         "Bmax": 175,
         "Brate": 1.5,
         "pfail": 0.5,
-        "discount rate 0": 3.5,
-        "discount rate 1": 3.5,
-        "discount rate 2": 3.5,
-        "ID flood wave shape": 4,
+        "discount_rate_0": 3.5,
+        "discount_rate_1": 3.5,
+        "discount_rate_2": 3.5,
+        "ID_flood_wave_shape": 4,
     }
     scen1 = {}
 
     for key in model.uncertainties:
-        name_split = key.name.split("_")
-
-        if len(name_split) == 1:
-            scen1.update({key.name: reference_values[key.name]})
+        key_name_split = key.name.split("_")
+        dike = key_name_split[0]
+        if dike == 'A0':
+            scen1.update({key.name : reference_values['ID_flood_wave_shape']})
+        elif dike[0] == 'A':
+            scen1.update({key.name : reference_values[key_name_split[1]]})
         else:
-            scen1.update({key.name: reference_values[name_split[1]]})
+            scen1.update({key.name : reference_values[key.name]})
 
     ref_scenario = Scenario("reference", **scen1)
 
@@ -267,8 +268,6 @@ if __name__ == "__main__":
             )
             results.append(result)
             convergences.append(convergence)
-
-    print(results)
 
     convergence_seed = pd.concat(convergences, ignore_index=False)  # agnes
     result_seed = pd.concat(results, ignore_index=False)  # agnes
