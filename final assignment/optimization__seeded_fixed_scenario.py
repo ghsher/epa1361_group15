@@ -282,11 +282,11 @@ if __name__ == "__main__":
 
                 filename_start = './output/DIRECTED_SEARCH__'
                 filename_end = '__scen' + str(scenario.name) + '__seed' + str(i) + '.csv'
-                result.to_csv(filename_start + 'results' + filename_end, index=False)
-                convergence.to_csv(filename_start + 'convergence' + filename_end, index=False)
+                result.to_csv(filename_start + 'results' + filename_end)
+                convergence.to_csv(filename_start + 'convergence' + filename_end)
 
     merged_archives = epsilon_nondominated(results, espilon, problem)
-    merged_archives.to_csv('./output/DIRECTED_SEARCH__merged_archives.csv', index=False)
+    merged_archives.to_csv('./output/DIRECTED_SEARCH__merged_archives.csv')
 
     # this plots the epsilon convergence from the last seed, so not very useful
     fig, (ax1, ax2) = plt.subplots(ncols=2, sharex="all")
