@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     espilon = [100, 0.01, 100, 100, 0.01]
 
-    nfe = 300
+    nfe = 30000
 
     # we need to store our results for each seed
     results = []
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     with MultiprocessingEvaluator(model) as evaluator:
         for scenario in scenarios:
             # we run again for 5 seeds
-            for i in range(1):
+            for i in range(5):
                 # we create 2 covergence tracker metrics
                 # the archive logger writes the archive to disk for every x nfe
                 # the epsilon progress tracks during runtime
@@ -94,6 +94,7 @@ if __name__ == "__main__":
                 filename_end = f'__scen{scenario.name}__seed{i}.csv'
                 result.to_csv(filename_start + 'results' + filename_end)
                 convergence.to_csv(filename_start + 'convergence' + filename_end)
-
-        merged_policies = epsilon_nondominated(results, espilon, problem)
-        merged_policies.to_csv(f'./output/POLICY_SEARCH__merged__scen{scenario}.csv')
+        
+            scenario_results = results[-5:]
+            merged_policies = epsilon_nondominated(scenario_results, espilon, problem)
+            merged_policies.to_csv(f'./output/POLICY_SEARCH__merged__scen{scenario}.csv')
