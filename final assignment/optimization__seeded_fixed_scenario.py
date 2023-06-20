@@ -210,7 +210,7 @@ if __name__ == "__main__":
 
     scenarios_df = pd.read_csv('output/selected_scenarios.csv')
     print(scenarios_df)
-    SCENARIO_NUMBERS = [0] # 0, 1, 2, 3, or 4 (4 == reference)
+    SCENARIO_NUMBERS = [0, 1, 2, 3, 4] # 0, 1, 2, 3, or 4 (4 == reference)
     
     scenarios = []
     for id in SCENARIO_NUMBERS:
@@ -236,22 +236,13 @@ if __name__ == "__main__":
 
         scenarios.append(scenario)
 
-    # espilon = [0.1] * len([outcome for outcome in model.outcomes if outcome.kind != AbstractOutcome.INFO])
-    # we decide to stick with the below, due to example outcome values generated in some optimization:
-    # 4185255.822441114,0.00032990200518328536,135802735.00849408,30559778.753226846,0.004074074031800072
-
     espilon = [100, 0.01, 100, 100, 0.01]
 
-    # nfe = 100  # proof of principle only, way to low for actual use
-    nfe = 30000 # <- this is what Agnes will run on 14.06, should take arounf 5h
-    # nfe = 10  # <- this is good for test runs <5min
-    # nfe's in Nicolo's Paper: 100K, Paper Fotini: 40K
+    nfe = 30000
 
     # we need to store our results for each seed
     results = []
     convergences = []
-
-    CURRENT_DATE = datetime.today().strftime('%Y%m%dT%H%M')
 
     with MultiprocessingEvaluator(model) as evaluator:
         for scenario in scenarios:
@@ -265,7 +256,7 @@ if __name__ == "__main__":
                         "./archives",
                         [l.name for l in model.levers],
                         [o.name for o in model.outcomes],
-                        base_filename="TEST" + f"_{i}" + ".tar.gz",
+                        base_filename=f"DIRECTED_SEARCH__archive__scen{scenario.name}__seed{i}.tar.gz"
                     ),
                     EpsilonProgress(),
                 ]
@@ -281,18 +272,9 @@ if __name__ == "__main__":
                 convergences.append(convergence)
 
                 filename_start = './output/DIRECTED_SEARCH__'
-                filename_end = '__scen' + str(scenario.name) + '__seed' + str(i) + '.csv'
+                filename_end = f'__scen{scenario.name}__seed{i}.csv'
                 result.to_csv(filename_start + 'results' + filename_end)
                 convergence.to_csv(filename_start + 'convergence' + filename_end)
 
-    merged_archives = epsilon_nondominated(results, espilon, problem)
-    merged_archives.to_csv('./output/DIRECTED_SEARCH__merged_archives.csv')
-
-    # this plots the epsilon convergence from the last seed, so not very useful
-    fig, (ax1, ax2) = plt.subplots(ncols=2, sharex="all")
-    fig, ax1 = plt.subplots(ncols=1)
-    ax1.plot(convergence.epsilon_progress)
-    ax1.set_xlabel("nr. of generations")
-    ax1.set_ylabel(r"$\epsilon$ progress")
-    sns.despine()
-    plt.show()
+        merged_archives = epsilon_nondominated(results, espilon, problem)
+        merged_archives.to_csv(f'./output/DIRECTED_SEARCH__merged_archives__scen{scenario}.csv')
