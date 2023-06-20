@@ -178,13 +178,15 @@ def get_model_for_problem_formulation(problem_formulation_id):
         # A4 Deaths and Damages
         for dike in function.dikelist:
             for entry in [
-                "Expected_Annual_Damage",
-                "Expected_Number_of_Deaths",
+                "Expected Annual Damage",
+                "Expected Number of Deaths",
             ]:
+                unc_name = ''.join(dike.split('.'))
+                unc_name += '_' + '_'.join(entry.split(' '))
                 if dike == "A.4":
                     outcomes.append(
                         ScalarOutcome(
-                            f"A4_{entry}",
+                            unc_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                             kind=direction,
@@ -242,14 +244,15 @@ def get_model_for_problem_formulation(problem_formulation_id):
         # A4 Deaths and Damages
         for dike in function.dikelist:
             for entry in [
-                "Expected_Annual_Damage",
-                "Expected_Number_of_Deaths",
+                "Expected Annual Damage",
+                "Expected Number of Deaths",
             ]:
-                dikestr = ''.join(dike.split('.'))
+                unc_name = ''.join(dike.split('.'))
+                unc_name += '_'.join(entry.split(' '))
                 if dike == "A.4":
                     outcomes.append(
                         ScalarOutcome(
-                            f"{dikestr}_{entry}",
+                            unc_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                             kind=direction,
@@ -258,7 +261,7 @@ def get_model_for_problem_formulation(problem_formulation_id):
                 else:
                     outcomes.append(
                         ScalarOutcome(
-                            f"{dikestr}_{entry}",
+                            unc_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                         )
