@@ -14,7 +14,7 @@ from problem_formulation import get_model_for_problem_formulation
 if __name__ == "__main__":
     ema_logging.log_to_stderr(ema_logging.INFO)
 
-    model, steps = get_model_for_problem_formulation('All Dikes')
+    model, steps = get_model_for_problem_formulation('A4 Only')
     problem = to_problem(model, searchover='levers')
 
     reference_values = {
@@ -34,26 +34,13 @@ if __name__ == "__main__":
     scenarios = []
     for id in SCENARIO_NUMBERS:
         scen = {}
-        if id == 4:
-            for key in model.uncertainties:
-                key_name_split = key.name.split("_")
-                dike = key_name_split[0]
-                if dike == 'A0':
-                    scen.update({key.name : reference_values['ID_flood_wave_shape']})
-                elif dike[0] == 'A':
-                    scen.update({key.name : reference_values[key_name_split[1]]})
-                else:
-                    scen.update({key.name : reference_values[key.name]})
-            scenario = Scenario("Reference", **scen)
-            
-        else:
-            for col in scenarios_df:
-                if col == 'Run ID':
-                    continue
-                scen.update({col : scenarios_df.loc[id, col]})
-            scenario = Scenario(scenarios_df.loc[id, 'Run ID'], **scen)
+        for col in scenarios_df:
+            if col == 'Run ID':
+                continue
+            scen.update({col : scenarios_df.loc[id, col]})
 
-        scenarios.append(scenario)
+        ema_scenario = Scenario(scenarios_df.loc[id, 'Run ID'], **scen)
+        scenarios.append(ema_scenario)
 
     espilon = [100, 0.01, 100, 100, 0.01]
 
@@ -97,4 +84,4 @@ if __name__ == "__main__":
         
             scenario_results = results[-5:]
             merged_policies = epsilon_nondominated(scenario_results, espilon, problem)
-            merged_policies.to_csv(f'./output/POLICY_SEARCH__merged__scen{scenario}.csv')
+            merged_policies.to_csv(f'./output/POLICY_SEARCH__merged__scen{scenario.name}.csv')
