@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     espilon = [100, 0.01, 100, 100, 0.01]
 
-    nfe = 30000
+    nfe = 20000
 
     # we need to store our results for each seed
     results = []
