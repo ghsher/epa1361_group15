@@ -181,12 +181,12 @@ def get_model_for_problem_formulation(problem_formulation_id):
                 "Expected Annual Damage",
                 "Expected Number of Deaths",
             ]:
-                unc_name = ''.join(dike.split('.'))
-                unc_name += '_' + '_'.join(entry.split(' '))
+                out_name = ''.join(dike.split('.'))
+                out_name += '_' + '_'.join(entry.split(' '))
                 if dike == "A.4":
                     outcomes.append(
                         ScalarOutcome(
-                            unc_name,
+                            out_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                             kind=direction,
@@ -247,12 +247,12 @@ def get_model_for_problem_formulation(problem_formulation_id):
                 "Expected Annual Damage",
                 "Expected Number of Deaths",
             ]:
-                unc_name = ''.join(dike.split('.'))
-                unc_name += '_'.join(entry.split(' '))
+                out_name = ''.join(dike.split('.'))
+                out_name += '_' + '_'.join(entry.split(' '))
                 if dike == "A.4":
                     outcomes.append(
                         ScalarOutcome(
-                            unc_name,
+                            out_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                             kind=direction,
@@ -261,7 +261,7 @@ def get_model_for_problem_formulation(problem_formulation_id):
                 else:
                     outcomes.append(
                         ScalarOutcome(
-                            unc_name,
+                            out_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                         )
