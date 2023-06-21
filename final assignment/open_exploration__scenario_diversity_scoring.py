@@ -9,7 +9,7 @@ from ema_workbench import Scenario
 
 random.seed(1361)
 
-combined_df = pd.read_csv('output/base_case_results__100000_scenarios__combined_df.csv')
+combined_df = pd.read_csv('output/base_case_results__100000_scenarios__prim_filtered.csv')
 combined_df = combined_df.rename({'Unnamed: 0' : 'Run ID'}, axis=1)
 
 ## ASSEMBLE 1M SCENARIO COMBINATIONS 
@@ -22,7 +22,7 @@ worst_case_index = indices.pop(0)
 
 # Randomly generate sets
 combinations = []
-for _ in range(1000000):
+for _ in range(2000000):
     c = random.sample(indices, 3)
     c.append(worst_case_index)
     combinations.append(tuple(c))
@@ -101,6 +101,7 @@ uncertainties = ['A.0_ID flood wave shape', 'A.1_Bmax', 'A.1_Brate', 'A.1_pfail'
 
 selected = combined_df.loc[most_diverse['combination'], uncertainties]
 scenarios = [Scenario(f"{index}", **row) for index, row in selected.iterrows()]
+
 for scenario in scenarios:
     print(scenario)
 

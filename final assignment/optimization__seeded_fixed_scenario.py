@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     scenarios_df = pd.read_csv('output/selected_scenarios.csv')
     print(scenarios_df)
-    SCENARIO_NUMBERS = [0]#, 1, 2, 3, 4] # 0, 1, 2, 3, or 4 (4 == reference)
+    SCENARIO_NUMBERS = [0]#, 1, 2, 3] # 0, 1, 2, or 3
     
     scenarios = []
     for id in SCENARIO_NUMBERS:

@@ -23,9 +23,9 @@ policies = []
 policies.append(Policy("Base Case", **dict(get_do_nothing_dict(),)))
 
 # pass the policies list to EMA workbench experiment runs
-N = 20
+N = 25
 with MultiprocessingEvaluator(dike_model) as evaluator:
     results = evaluator.perform_experiments(N, policies)
     
-filename = './output/' + 'base_case' + '_results__' + str(N) + '_scenarios.csv'
+filename = './output/' + 'base_case' + '_results__' + str(N) + '_scenarios.tar.gz'
 save_results(results, filename)
