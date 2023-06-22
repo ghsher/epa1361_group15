@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn import preprocessing
 import os
 from scipy.spatial.distance import pdist, squareform
-from scenario_diversity import find_maxdiverse
+from set_diversity import find_maxdiverse
 import numpy as np
 from ema_workbench import Scenario
 from ema_workbench.analysis import parcoords
