@@ -23,7 +23,7 @@ policies = []
 policies.append(Policy("Base Case", **dict(get_do_nothing_dict(),)))
 
 # pass the policies list to EMA workbench experiment runs
-N = 25
+N = 100000
 with MultiprocessingEvaluator(dike_model) as evaluator:
     results = evaluator.perform_experiments(N, policies)
     
