@@ -29,10 +29,9 @@ if __name__ == "__main__":
 
     scenarios_df = pd.read_csv('output/selected_scenarios.csv')
     print(scenarios_df)
-    SCENARIO_NUMBERS = [0]#, 1, 2, 3] # 0, 1, 2, or 3
     
     scenarios = []
-    for id in SCENARIO_NUMBERS:
+    for id in range(scenarios_df.shape[0]):
         scen = {}
         for col in scenarios_df:
             if col == 'Run ID':
