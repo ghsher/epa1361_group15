@@ -6,11 +6,15 @@ from scipy.spatial.distance import pdist, squareform
 from scenario_diversity import find_maxdiverse
 import numpy as np
 from ema_workbench import Scenario
+from ema_workbench.analysis import parcoords
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 random.seed(1361)
 
 combined_df = pd.read_csv('output/base_case_results__100000_scenarios__prim_filtered.csv')
 combined_df = combined_df.rename({'Unnamed: 0' : 'Run ID'}, axis=1)
+# combined_df = combined_df.set_index('Run ID')
 
 ## ASSEMBLE 1M SCENARIO COMBINATIONS 
 
@@ -31,12 +35,12 @@ for _ in range(2000000):
 
 # Select and rename columns of interest
 combined_df['Dike Rings 1 & 2 Damage/Year'] =       \
-        combined_df['A.1 Expected Annual Damage'] + \
-        combined_df['A.2 Expected Annual Damage']
+        combined_df['A1_Expected_Annual_Damage'] + \
+        combined_df['A2_Expected_Annual_Damage']
 
 combined_df = combined_df.rename({
-    'A.4 Expected Annual Damage'    : 'Dike Ring 4 Damage/Year',
-    'Total Expected Annual Damage'  : 'Total Damage/Year',
+    'A4_Expected_Annual_Damage'    : 'Dike Ring 4 Damage/Year',
+    'Total_Expected_Annual_Damage'  : 'Total Damage/Year',
 }, axis=1)
 
 outcomes_of_interest = ['Dike Rings 1 & 2 Damage/Year',
@@ -85,25 +89,38 @@ for id, results in return_dict.items():
         results_list.append({'score':score,
                              'combination':combination})
 
-# diversity_results = np.concatenate(return_list)
-
 # Capture results
 results_list.sort(key=lambda entry:entry['score'], reverse=True)
 
 most_diverse = results_list[0]
 most_diverse_set = most_diverse['combination']
-print(most_diverse_set)
+run_ids = [combined_df.loc[s, 'Run ID'] for s in most_diverse_set]
+print("Selected most diverse set: Run IDs", run_ids)
 
-uncertainties = ['A.0_ID flood wave shape', 'A.1_Bmax', 'A.1_Brate', 'A.1_pfail', 'A.2_Bmax',
-                 'A.2_Brate', 'A.2_pfail', 'A.3_Bmax', 'A.3_Brate', 'A.3_pfail', 'A.4_Bmax',
-                 'A.4_Brate', 'A.4_pfail', 'A.5_Bmax', 'A.5_Brate', 'A.5_pfail',
-                 'discount rate 0', 'discount rate 1', 'discount rate 2',]
+uncertainties = ['A0_ID_flood_wave_shape', 'A1_Bmax', 'A1_Brate', 'A1_pfail', 'A2_Bmax',
+                 'A2_Brate', 'A2_pfail', 'A3_Bmax', 'A3_Brate', 'A3_pfail', 'A4_Bmax',
+                 'A4_Brate', 'A4_pfail', 'A5_Bmax', 'A5_Brate', 'A5_pfail',
+                 'discount_rate_0', 'discount_rate_1', 'discount_rate_2',]
 
-selected = combined_df.loc[most_diverse['combination'], uncertainties]
-scenarios = [Scenario(f"{index}", **row) for index, row in selected.iterrows()]
+selected = combined_df.loc[most_diverse_set, ['Run ID'] + uncertainties]
+selected.to_csv('output/selected_scenarios.csv', index=False)
 
-for scenario in scenarios:
-    print(scenario)
+## PLOTTING
 
-selected_forsave = combined_df.loc[most_diverse['combination'], ['Run ID'] + uncertainties]
-selected_forsave.to_csv('output/selected_scenarios.csv', index=False)
+# Overwrite outcomes_df to have headers
+outcomes_df = combined_df[outcomes_of_interest]
+
+limits = parcoords.get_limits(outcomes_df)
+axes = parcoords.ParallelAxes(limits)
+
+# we set the linewidth lower, and make the lines slightly transpartant using alpha
+# this often helps reveal patterns in the results.
+axes.plot(outcomes_df, color='lightgrey', lw=0.5, alpha=0.5)
+for i, scenario in enumerate(most_diverse_set):
+    axes.plot(outcomes_df.loc[scenario, :], color=sns.color_palette()[i], lw=1)
+
+fig = plt.gcf()
+fig.set_size_inches((12, 20))
+
+plt.savefig('img/selected_scenarios__outcome_plot.png')
+plt.show()
