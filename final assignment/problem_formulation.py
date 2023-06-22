@@ -151,42 +151,62 @@ def get_model_for_problem_formulation(problem_formulation_id):
         ),
     ]
 
-    # Problem formulations:
+    # Generally, we are attempting to find policies that serve our local
+    # community (Dike Ring 4) while also serving the IJssel region as a whole.
+    # Our clients, representatives of the Dike Ring, seek a policy that is
+    # maximally beneficial to their direct needs and wants. At the same time,
+    # we seek to propose a policy that serves the whole region, to help our
+    # clients gain favour at the negotiation table.
+    #
+    # Our client's mandate centers around minimizing harm in Dike Ring 4.
+    # Beyond that, they seek to ensure that other Dike Rings do not see
+    # disproportionately more protection than they do, and that they are not
+    # disproportionately more burdened by infrastructure projects and land
+    # reclamation than the other regions.
+    #
+    # Thus, we define two main "problem formulations" which we will run inside
+    # the model. The first ('A4 Only') focuses just on local effects (deaths
+    # and amages). The second ('All Dikes') includes the deaths and damages in
+    # each dike ring. Both include "totals" (sums of deaths/damages across all
+    # dike rings): A4 Only does so so that, when we use it in service of policy
+    # optimization, we do not neglect total damages in our search; All Dikes
+    # includes this outcome simply for convenience, as it is duplicated by its
+    # other outcomes. Both formulations also include a 'Total Infrasutructure
+    # Costs' outcome, that is the sum of the cost of Dike Heightening and RfR
+    # measures. Who pays for what is fundamentally a political question tied to
+    # numerous factors including how effective a proposed policy is in 
+    # protecting each region. Thus, it would be dishonest to optimize for one
+    # particular type of cost, unless we were explicitly trying to avoid a 
+    # particular type of policy, which we are not. The outputs of our modelling
+    # can be used down the line to justify a particular cost sharing scheme, if
+    # politically necessary. 
+    #
+    # In some parts of our analysis, we consider other important outcomes or
+    # metrics, such as the ratio of damages in Dike Ring 4 to those in
+    # Dike Rings 1 & 2 (the regions of industrial farmers). Since these are
+    # explicitly calculable from our full set of outcomes, and since we do not
+    # use them in optimization (as that would produce policies that would not
+    # see political consensus), we calculate them in our post-hoc analysis.
+
     # Outcomes are all costs, thus they have to minimized:
     direction = ScalarOutcome.MINIMIZE
-
-    # OUTCOMES OF INTEREST:
-    # In Open Exploration, we care about (5 total):
-    #   Deaths to DR4
-    #   Damages in DR4
-    #   Total infrastructure costs (all DRs)
-    #   Total deaths (all DRs)
-    #   Total damages (all DRs)
-    # In DS, we care about (13 total) (some will be set kind=info so they are ignored by optimizer):
-    #   Deaths per DR (DRs 1, 2, 3, 5 := info)
-    #   Damages per DR (DRs 1, 2, 3, 5 := info)
-    #   Total infrastructure costs (all DRs)
-    #   Total deaths (all DRs)
-    #   Total damages (all DRs)
-    # Thus, we can assemble one Problem Formulation that includes all of the
-    #  above and set kind=INFO where relevant (kind defaults to INFO) for DS
-    #  and simply drop those columns from the outputs for OE as desired
 
     if problem_formulation_id == 'A4 Only':
 
         outcomes = []
+
         # A4 Deaths and Damages
         for dike in function.dikelist:
             for entry in [
                 "Expected Annual Damage",
                 "Expected Number of Deaths",
             ]:
-                out_name = ''.join(dike.split('.'))
-                out_name += '_' + '_'.join(entry.split(' '))
+                outcome_name = ''.join(dike.split('.'))
+                outcome_name += '_' + '_'.join(entry.split(' '))
                 if dike == "A.4":
                     outcomes.append(
                         ScalarOutcome(
-                            out_name,
+                            outcome_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                             kind=direction,
@@ -240,19 +260,27 @@ def get_model_for_problem_formulation(problem_formulation_id):
         dike_model.outcomes = outcomes
 
     elif problem_formulation_id == 'All Dikes':
+
         outcomes = []
-        # A4 Deaths and Damages
+
+        # All Dike Ring Deaths and Damages
         for dike in function.dikelist:
             for entry in [
                 "Expected Annual Damage",
                 "Expected Number of Deaths",
             ]:
-                out_name = ''.join(dike.split('.'))
-                out_name += '_' + '_'.join(entry.split(' '))
+                outcome_name = ''.join(dike.split('.'))
+                outcome_name += '_' + '_'.join(entry.split(' '))
+
+                # We mark A.4 with "kind=Outcome.MINIMIZE" so that this problem
+                # formulation can be used in an optimization without expliticly
+                # optimizing for all 13 outcomes. Due to some nuances in the
+                # ema_workbench, this was ultimately unused.
+
                 if dike == "A.4":
                     outcomes.append(
                         ScalarOutcome(
-                            out_name,
+                            outcome_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                             kind=direction,
@@ -261,7 +289,7 @@ def get_model_for_problem_formulation(problem_formulation_id):
                 else:
                     outcomes.append(
                         ScalarOutcome(
-                            out_name,
+                            outcome_name,
                             variable_name=f"{dike}_{entry}",
                             function=sum_over,
                         )
@@ -283,7 +311,7 @@ def get_model_for_problem_formulation(problem_formulation_id):
             )
         )
 
-        # Aggregated Deaths and Damages
+        # Aggregated Deaths and Damages (for convenience)
         total_damage_variables = []
         total_damage_variables.extend(
             [f"{dike}_Expected Annual Damage" for dike in function.dikelist]
@@ -317,7 +345,6 @@ def get_model_for_problem_formulation(problem_formulation_id):
         raise TypeError("unknown identifier")
 
     return dike_model, function.planning_steps
-
 
 
 if __name__ == "__main__":
