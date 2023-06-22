@@ -37,7 +37,7 @@ def evaluate_diversity_single(indices, distances, weight=0.5):
     return [diversity]
 
 
-def find_maxdiverse_scenarios(distances, combinations):
+def find_maxdiverse(distances, combinations):
     """
 
     Parameters

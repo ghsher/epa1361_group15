@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn import preprocessing
 import os
 from scipy.spatial.distance import pdist, squareform
-from scenario_diversity import find_maxdiverse_scenarios
+from scenario_diversity import find_maxdiverse
 import numpy as np
 from ema_workbench import Scenario
 
@@ -57,7 +57,7 @@ distances = squareform(pdist(normalized_outcomes.values))
 
 from multiprocessing import Process, Manager
 def worker(id, distances, combinations, return_dict):
-    return_dict[id] = find_maxdiverse_scenarios(distances, combinations)
+    return_dict[id] = find_maxdiverse(distances, combinations)
 
 manager = Manager()
 return_dict = manager.dict()
