@@ -55,7 +55,7 @@ An annotated `tree` of the current directory is provided. Below, we explain the 
 # Experimentation & Analysis Files
 # (in order of first use in modeling pipeline)
 ├── run_experiments.py
-├── Global_sensitivity_analysis_SOBOL.ipynb
+├── Global Sensitivity Analysis.ipynb
 ├── Feature Scoring & Dimensional Stacking.ipynb
 ├── basic_statistical_analysis.ipynb
 ├── Scenario_Discovery.ipynb
@@ -111,7 +111,7 @@ python run_experiments.py --mode=base_case --num_scenarios=100000
 
 ### Step 2: Open Exploration: Uncertainty Analysis
 
-**Files:** [Global_sensitivity_analysis_SOBOL.ipynb](Global_sensitivity_analysis_SOBOL.ipynb) & [Feature Scoring & Dimensional Stacking.ipynb](Feature%20Scoring%20%26%20Dimensional%20Stacking.ipynb)
+**Files:** [Global Sensitivity Analysis.ipynb](Global%20Sensitivity%20Analysis.ipynb) & [Feature Scoring & Dimensional Stacking.ipynb](Feature%20Scoring%20%26%20Dimensional%20Stacking.ipynb)
 
 **Purpose & Output:** Generates graphs depicting the importance of various uncertainties and levers on the overall performance and outcomes of the IJssel River model.
 
