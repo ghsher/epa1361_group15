@@ -23,8 +23,8 @@ Prepared for EPA1361 by Group 15.
     - [Other Files](#other-files)
   - [Modeling Pipeline](#modeling-pipeline)
     - [Step 1: Run Initial Experiments with the "Do Nothing" Policy](#step-1-run-initial-experiments-with-the-do-nothing-policy)
-    - [Step 2: Uncertainty Analysis](#step-2-uncertainty-analysis)
-    - [Step 3: Scenario Discovery \& Selection](#step-3-scenario-discovery--selection)
+    - [Step 2: Open Exploration: Uncertainty Analysis](#step-2-open-exploration-uncertainty-analysis)
+    - [Step 3: Open Exploration: Scenario Discovery \& Selection](#step-3-open-exploration-scenario-discovery--selection)
         - [Step 3a: Scenario Discovery](#step-3a-scenario-discovery)
         - [Step 3b: Scenario Selection](#step-3b-scenario-selection)
     - [Step 4: Multi-Scenario, Multi-Objective Robust Policy Search](#step-4-multi-scenario-multi-objective-robust-policy-search)
@@ -112,7 +112,7 @@ python run_experiments.py --mode=base_case --num_scenarios=100000
   *  `--num_scenarios` allows a user to specify how many scenarios to run in the experiments. This is ignored if `mode==vulnerability`. The default value is `100000` if `mode==base_case` and `1000` if `mode=robustness`.
 
 
-### Step 2: Uncertainty Analysis
+### Step 2: Open Exploration: Uncertainty Analysis
 
 **Files:** [Global_sensitivity_analysis_SOBOL.ipynb](Global_sensitivity_analysis_SOBOL.ipynb) & [Feature Scoring & Dimensional Stacking.ipynb](Feature%20Scoring%20%26%20Dimensional%20Stacking.ipynb)
 
@@ -123,7 +123,7 @@ python run_experiments.py --mode=base_case --num_scenarios=100000
 **Required Input:** A valid experimental results file, likely the `base_case` file produced in Step 1.
 
 
-### Step 3: Scenario Discovery & Selection
+### Step 3: Open Exploration: Scenario Discovery & Selection
 
 
 ##### Step 3a: Scenario Discovery
