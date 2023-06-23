@@ -1,22 +1,252 @@
-# EPA1361 Model-based Decision-making
-Welcome to the EPA1361 code repository. This repository contains all the assignments, model answers (published each two weeks), the final project, and models and data to support those.
+# IJssel River Room for the River Project
+## A Model-Based Approach to Guiding Decision Making with Science
 
-_This repository is part of the EPA1361 Model-based Decision-making course of the Engineering and Policy Analysis (EPA) Master program at the Delft University of Technology._
+Prepared for EPA1361 by Group 15. 
 
-## Contents
-- [Week 1-2 - general intro to exploratory modelling](Week%201-2%20-%20general%20intro%20to%20exploratory%20modelling)<br>
-  _Get started with exploratory modelling, the EMAworkbench and different models and connectors_
-- [Week 3-4 - vulnerability analysis](Week%203-4%20-%20vulnerability%20analysis)<br>
-  _Deep dive into Scenario Discovery, Sensitivity Analysis, and Uncertainty Management_
-- [Week 5-6 - robustness and direct search](Week%205-6%20-%20robustness%20and%20direct%20search)<br>
-  _Robustness and direct search_
-- [final assignment](final%20assignment)<br>
-  _The final project assignment_
+| Team Member            | Student Number |
+| ---------------------- | -------------- |
+| Bouzelou, Fotini Maria | 5865727        |
+| Burkot, Agnieszka      | 5808839        |
+| Camarena Barba, Angela | 5715008        |
+| de Bruijn, Christopher | 4678850        |
+| Romijn, Michiel        | 4755138        |
+| Sher, Gabriel          | 5773199        |
+
+## Table of Contents
+- [IJssel River Room for the River Project](#ijssel-river-room-for-the-river-project)
+  - [A Model-Based Approach to Guiding Decision Making with Science](#a-model-based-approach-to-guiding-decision-making-with-science)
+  - [Table of Contents](#table-of-contents)
+  - [File Structure](#file-structure)
+    - [Directories](#directories)
+    - [Model \& Workbench Files](#model--workbench-files)
+    - [Experimentation \& Analysis Files (\& Usage)](#experimentation--analysis-files--usage)
+    - [Other Files](#other-files)
+  - [Modeling Pipeline](#modeling-pipeline)
+    - [Step 1: Run Initial Experiments with the "Do Nothing" Policy](#step-1-run-initial-experiments-with-the-do-nothing-policy)
+    - [Step 2: Open Exploration: Uncertainty Analysis](#step-2-open-exploration-uncertainty-analysis)
+    - [Step 3: Open Exploration: Scenario Discovery \& Selection](#step-3-open-exploration-scenario-discovery--selection)
+        - [Step 3a: Scenario Discovery](#step-3a-scenario-discovery)
+        - [Step 3b: Scenario Selection](#step-3b-scenario-selection)
+    - [Step 4: Multi-Scenario, Multi-Objective Robust Policy Search](#step-4-multi-scenario-multi-objective-robust-policy-search)
+        - [Step 4a: Generative Algorithm Policy Search](#step-4a-generative-algorithm-policy-search)
+        - [Step 4b: Convergence Testing \& Initial Policy Filtering](#step-4b-convergence-testing--initial-policy-filtering)
+        - [Step 4c: Robustness Testing](#step-4c-robustness-testing)
+        - [Step 4d: Vulnerability Testing](#step-4d-vulnerability-testing)
+
+
+## File Structure
+
+An annotated `tree` of the current directory is provided. Below, we explain the purpose of each category and some individual files. 
+
+```
+# Directories
+├── archives/
+├── data/
+├── img/
+├── output/
+# Base Model Files -- Untouched
+├── __init__.py
+├── dike_model_function.py
+├── funs_dikes.py
+├── funs_economy.py
+├── funs_generate_network.py
+├── funs_hydrostat.py
+# Provided Workbench Files -- Edited
+├── problem_formulation.py
+# Experimentation & Analysis Files
+# (in order of first use in modeling pipeline)
+├── run_experiments.py
+├── Global Sensitivity Analysis.ipynb
+├── Feature Scoring & Dimensional Stacking.ipynb
+├── basic_statistical_analysis.ipynb
+├── Scenario_Discovery.ipynb
+├── open_exploration__scenario_diversity_scoring.py
+├── optimization__seeded_fixed_scenario.py
+├── Directed Search.ipynb
+├── Policy Robustness.ipynb
+├── Policy Vulnerability.ipynb
+# Library / Function Definition Files
+├── set_diversity.py
+# Other
+└── README.md
+```
+
+### Directories
+* [archives/](archives) contains a history of the full run from the Optimization process, for reference and for use in checking whether the generative algorithm converged
+* [data/](data) is an unmodified folder containing data used by the base model
+* [output/](output) contains all output files produced in our analysis process, which are mostly CSVs or compressed tarballs of more CSVs. There is a table in [Modeling Pipeline](#modeling-pipeline) containing a description of these files and naming their originating file. **NOTE**: Running our analysis files will overwrite these files. There is one case where these the contents of these files is not seeded, so will produce different results downstream. This is marked in comments and in [Modeling Pipeline](#modeling-pipeline).
+* [img/](img) contains all plots and diagrams generated by code in our analysis files.
+
+### Model & Workbench Files
+* The IJssel River model files were left untouched, as our Client's needs did not require a modification or extension to the provided model.
+* The provided workbench interface file [problem_formulation.py](problem_formulation.py) was modified in two major ways. First, all model variables were passed a `name` parameter that removed periods and spaces, to prevent some small downstream issues in the EMA workbench. Second, the formulation options were changed. Explanation and justification of the provided cases can be found in that file and in our report.
+
+### Experimentation & Analysis Files (& Usage)
+* These files make up the bulk of our work as modellers and analysts. They follow a linear pipeline process with an opportunity to plug final results back into the start of the process to iterate on scenario and policy discovery. 
+* Unfortunately, we did not have the time to create one combined runfile that performs the entire process from start to finish.
+* **These files are what to run to replicate our results. Their usage is described in [Modeling Pipeline](#modeling-pipeline), below.**
+
+### Other Files
+* We include one library file that defines helper functions used multiple times in our analysis.
+* You're reading the README right now.
   
-## Requirements
-This repostitory is tested on Python 3.11. It has the same dependencies as the EMAworkbench (see [installation guide](https://emaworkbench.readthedocs.io/en/latest/getting_started/installation.html)). Furthermore it uses [seaborn](https://github.com/mwaskom/seaborn) for many of the plots.
+## Modeling Pipeline
+As mentioned, our modelling pipeline is quite linear with the opportunity to feed back to the starting point from multiple places along it. This section will describe the pipeline and give usage instructions for each file used at each step
+
+
+### Step 1: Run Initial Experiments with the "Do Nothing" Policy
+
+**File:** [run_experiments.py](run_experiments.py)
+
+**Purpose & Output**: 
+Genereates a `.tar.gz` file in `output/` named `base_case_results__{num_scenarios}_scenarios.tar.gz` which can be loaded into a file using `ema_workbench.load_results()`.
+
+**Instructions:**
+```
+python run_experiments.py --mode=base_case --num_scenarios=100000
+```
+* This file takes optional command line arguments `--mode` and `--num_scenarios`.
+  *  `--mode` determines which part of the pipeline to run, and can currently take on the values `base_case` (for initial experimentation), `robustness` (for running a subset of discovered policies under a smaller set of random scenarios), and `vulnerability` (for running the final, small set of selected policies under the set of scenarios from initial experimentation that fall within the discovered uncertainty space). The default value is `base_case`.
+     *  Other modes will be used later in the pipeline.
+  *  `--num_scenarios` allows a user to specify how many scenarios to run in the experiments. This is ignored if `mode==vulnerability`. The default value is `100000` if `mode==base_case` and `1000` if `mode=robustness`.
+
+
+### Step 2: Open Exploration: Uncertainty Analysis
+
+**Files:** [Global Sensitivity Analysis.ipynb](Global%20Sensitivity%20Analysis.ipynb) & [Feature Scoring & Dimensional Stacking.ipynb](Feature%20Scoring%20%26%20Dimensional%20Stacking.ipynb)
+
+**Purpose & Output:** Generates graphs depicting the importance of various uncertainties and levers on the overall performance and outcomes of the IJssel River model.
+* Global Sensitivity Analysis: Creating multiple plots visualizing the metrics from Sobol analysis with a focus on S1, ST, and confidence intervals from a plethora of outcomes.
+* Feature Scoring: Generating a heatmap that quantifies the degree of correlation between each uncertainty and outcomes of interest.
+* Dimensional Stacking: Producing multiple pivot plots visualizing how uncertainty response varies in the high-dimensional parameter space.
+
+**Instructions:** Open as Jupyter Notebooks and read results, or start a kernel and run from top to bottom.
+
+**Required Input:** A valid experimental results file, likely the `base_case` file produced in Step 1.
+
+
+### Step 3: Open Exploration: Scenario Discovery & Selection
+
+
+##### Step 3a: Scenario Discovery
+
+**File:** [Scenario_Discovery.ipynb](Scenario_Discovery.ipynb) 
+
+**Purpose & Output:** 
+* Generates graphs depicting the parts of the outcome space and uncertainty space of the experiments run in Step 1. 
+* Uses PRIM to find a subspace of the model's uncertainty space that effectively represents the "region of concern" (scenarios that fall within this subspace are likely to generate bad outcomes).
+* Writes a CSV that combines the input `base_case` experiments file into one table with both experiments and results, and filters out any scenarios that fall outside the bounding box discovered by PRIM.
+  * This file will have the same name as the tarball from Step 1, but with `__prim_filtered.csv` appended in place of `.tar.gz`.
+
+**Instructions:** Open as a Jupyter Notebook and read results, or start a kernel and run from top to bottom.
+
+**Required Input:** A valid experimental results file, likely the `base_case` file produced in Step 1.
+
+##### Step 3b: Scenario Selection
+
+**File:** [open_exploration__scenario_diversity_scoring.py](open_exploration__scenario_diversity_scoring.py)
+
+**Purpose & Output:** 
+* Samples two million combinations of the filtered (post-PRIM) scenarios to find a set of four scenarios that maximizes diversity in terms of the some model outcomes. All sampled combinations include the "worst case" scenario studied, which is the scenario that generated the greatest damages in Dike Ring 4 in the "do nothing" case.
+  * Diversity is assessed for the following outcomes: Dike Ring 4 damages, Dike Rings 1 & 2 damages (together), and Total Damages. We wanted to find scenarios that explicitly cause disproportionate damage to each of the rural (farming) regions, as well as cases that don't cause much damage at all across the board.
+* Writes the selected scenario set to a file ([selected_scenarios.csv](output/selected_scenarios.csv)).
+
+**Instructions:** 
 
 ```
-pip install -U ema_workbench[recommended] seaborn
+python open_exploraion__scenario_diversity_scoring.py
 ```
-Also checkout the [Software](https://brightspace.tudelft.nl/d2l/le/content/499877/Home) section on Brightspace.
+
+(This is run as a Python script instead of a Jupyter notebook to enable maximal performance when creating and scoring the scenario sets. When the number of input scenarios was larger on previous iterations of our modelling performance (too lenient a PRIM box), parallelizing this process in a Notebook was not working, so we moved to using Python's standard multiprocessing in a file).
+
+**Required Input:** A combined and PRIM-filtered experimental results table, as produced in the previous file in this step.
+
+### Step 4: Multi-Scenario, Multi-Objective Robust Policy Search
+
+
+##### Step 4a: Generative Algorithm Policy Search
+
+**File:** [optimization__seeded_fixed_scenario.py](optimization__seeded_fixed_scenario.py)
+
+**Purpose & Output:** 
+* For each scenario that was selected in Step 2b, runs a generative algorithm that discovers and assesses policies that optimize for the outcomes in our primary problem formulation. Repeats this process for 5 different seeds per scenario. 
+* Saves output files `POLICY_SEARCH__results__*.csv`, `POLICY_SEARCH__convergence__*.csv` and archive files `POLICY_SEARCH__archive__*.csv`, in `output/` and `archives/`, respectively.
+  * These files contain different parts of the results of this process:
+    * The `results` files contain the policies found by the algorith alongside the model outcomes calculated for the scenario under which they were discovered.
+    * The `convergence` files include a key indicator (`epsilon_progress`) of whether the generative algorithm converged to a final policy set.
+    * The `archive` files include a history of how the algorithm generated and found new policies over time.
+
+**Instructions:** 
+
+```
+python optimization__seeded_fixed_scenario.py`
+```
+
+**Required Input:** A table of scenarios in `selected_scenarios.csv`, whether hand-picked or selected by Step 2b.
+
+
+##### Step 4b: Convergence Testing & Initial Policy Filtering
+
+**File:** [Directed Search.ipynb](Directed%20Search.ipynb)
+
+**Purpose & Output:** 
+* Evaluates the optimization process carried out in the previous file, by plotting convergence metrics depicting how the generative algorithm moved towards optimization. These plots are saved in `img/`.
+* Runs the model with the discovered policies under the scenarios in which they were discovered, to calculate a wider set of model outcomes. 
+* Filters the discovered policies according to a set of constraints defined to match the Clients' goals.
+* Selects a set of 50 such policies that are internally diverse across the set of levers they activate, and saves these to a file
+* Saves output files `output/policies__constraints_filtered.csv` and `output/policies__constraints_filtered__diverse_50.csv` that include the policy sets being considered in future steps. We include this in our output so that the Client can peruse other possible options that our algorithmic process produced.
+
+<span style="color:red">**WARNING**:</span> For some reason (we suspect it might be due to how seeds are handled in the IJssel River model itself?), the policy sets produced in this file change on every run. The larger, filtered set is with >95% the same, with just a few policies that are on the edge of passing our constraints sometimes making it and sometimes not. The "diverse 50" set thus varies quite highly on each run due to these small changes in the input set to its diversity serach.
+
+**Instructions:** 
+Open as a Jupyter Notebook and run from top to bottom. **Calculating the convergence metrics takes 5-10 minutes, so can be commented out (also comment out the following cell that plots the metrics).**
+
+**Required Input:** A set of results from the optimization process, above, and the table of scenarios in `selected_scenarios.csv` for which that optimization process was run.
+
+##### Step 4c: Robustness Testing
+
+**Files:** [`run_experiments.py`](run_experiments.py) & [`Policy Robustness.ipynb`](`Policy%20Robustness.ipynb`)
+
+**Purpose & Output:** 
+* Perform EMA workbench experiments on the filtered policy set using 1000 random scenarios, and save the results to the file `robustness_results__1000_scenarios.tar.gz`. See Step 1 for a general description `run_experiments.py`.
+* Calculate a set of robustness metrics based on the experiment results from the previous substep.
+* Generates and saves graphs comparing the set of 50 policies according to these metrics.
+* A mix of automated rules and qualitative analyst analysis are used to further downselect to 5 or fewer policies, which are saved in `outputs/policies__final_set.csv`.
+
+**Instructions:**
+
+```
+python run_experiments.py mode=robustness num_scenarios=1000
+```
+
+Then open `Policy Robustness.ipynb` as a Jupyter Notebook and run from top to bottom or read the in-line analysis.
+
+**Required Input:** 
+
+* In this mode, `run_experiments.py` requires a file called `output/policies__constraints_filtered__diverse_set_50.csv`, which is generated in the previous substep.
+* If you input a `num_scenarios` other than 1000, you will have to edit the input filename in the Robustness Notebook. This Notebook also requires a CSV from one of the previous substeps where a set of policies were captured, from which to read, filter, and re-write the final policy set.
+
+<span style="color:red">**WARNING**:</span> Due to the issue described in the previous substep, the `robustness_results__1000_scenarios.tar.gz` being submitted was generated based on a different input set than the diverse policy set CSV being submitted. We ran out of time to re-run this process and re-analyse the results in the following step, but trust that these experiments were run for a real set of policies generated by the previous substep.
+
+
+##### Step 4d: Vulnerability Testing
+
+**Files:** [`run_experiments.py`](run_experiments.py) & [`Policy Vulnerability.ipynb`](`Policy%20Vulnerability.ipynb`)
+
+**Purpose & Output:**
+* Run a process much like Scenario Discovery on the originally-marked scenarios of concern (those that fall within the original PRIM box) and the discovered candidate policy solutions.
+* Discover a bounding box of a subspace of "great concern," by running PRIM on the results of this new round of experimentation.
+* Filter down to a subset of scenario-policy pairs that are of great concern.
+* Interrogate meaningful advice that can be derived from understanding these scenarios of concern for the proposed policies.
+
+**Instructions:**
+
+```
+python run_experiments.py mode=vulnerability
+```
+
+Then open `Policy Vulnerability.ipynb` as a Jupyter Notebook and run from top to bottom or read the in-line analysis.
+
+**Required Input:** 
+
+* In this mode, `run_experiments.py` requires a file called `output/policies__final_set.csv`, which is generated in the previous substep.
