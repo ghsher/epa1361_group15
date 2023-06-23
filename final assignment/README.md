@@ -114,6 +114,9 @@ python run_experiments.py --mode=base_case --num_scenarios=100000
 **Files:** [Global Sensitivity Analysis.ipynb](Global%20Sensitivity%20Analysis.ipynb) & [Feature Scoring & Dimensional Stacking.ipynb](Feature%20Scoring%20%26%20Dimensional%20Stacking.ipynb)
 
 **Purpose & Output:** Generates graphs depicting the importance of various uncertainties and levers on the overall performance and outcomes of the IJssel River model.
+* Global Sensitivity Analysis: Creating multiple plots visualizing the metrics from Sobol analysis with a focus on S1, ST, and confidence intervals from a plethora of outcomes.
+* Feature Scoring: Generating a heatmap that quantifies the degree of correlation between each uncertainty and outcomes of interest.
+* Dimensional Stacking: Producing multiple pivot plots visualizing how uncertainty response varies in the high-dimensional parameter space.
 
 **Instructions:** Open as Jupyter Notebooks and read results, or start a kernel and run from top to bottom.
 
@@ -155,28 +158,6 @@ python open_exploraion__scenario_diversity_scoring.py
 (This is run as a Python script instead of a Jupyter notebook to enable maximal performance when creating and scoring the scenario sets. When the number of input scenarios was larger on previous iterations of our modelling performance (too lenient a PRIM box), parallelizing this process in a Notebook was not working, so we moved to using Python's standard multiprocessing in a file).
 
 **Required Input:** A combined and PRIM-filtered experimental results table, as produced in the previous file in this step.
-
-##### Step 3c: Feature Scoring & Dimensional Stacking
-
-**File:** [Feature Scoring & Dimensional Stacking.ipynb](Feature Scoring & Dimensional Stacking.ipynb) 
-
-**Purpose & Output:** 
-* Feature Scoring: Generating a heatmap that quantifies the degree of correlation between each uncertainty and outcomes of interest.
-* Dimensional Stacking: Producing multiple pivot plots visualizing how uncertainty response varies in the high-dimensional parameter space.
-
-**Instructions:** Open as a Jupyter Notebook and read results, or start a kernel and run from top to bottom.
-
-**Required Input:** A valid experimental results file, likely the `base_case` file produced in Step 1.
-
-##### Step 3d: Global Sensitivity Analysis
-
-**File:** [Global Sensitivity Analysis.ipynb](Global Sensitivity Analysis.ipynb) 
-
-**Purpose & Output:** 
-* Creating multiple plots visualizing the metrics from Sobol analysis with a focus on S1, ST, and confidence intervals from a plethora of outcomes.
-
-**Instructions:** Open as a Jupyter Notebook and read results, or start a kernel and run from top to bottom.
-
 
 ### Step 4: Multi-Scenario, Multi-Objective Robust Policy Search
 
