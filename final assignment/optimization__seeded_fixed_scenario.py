@@ -17,16 +17,6 @@ if __name__ == "__main__":
     model, steps = get_model_for_problem_formulation('A4 Only')
     problem = to_problem(model, searchover='levers')
 
-    reference_values = {
-        "Bmax": 175,
-        "Brate": 1.5,
-        "pfail": 0.5,
-        "discount_rate_0": 3.5,
-        "discount_rate_1": 3.5,
-        "discount_rate_2": 3.5,
-        "ID_flood_wave_shape": 4,
-    }
-
     scenarios_df = pd.read_csv('output/selected_scenarios.csv')
     print(scenarios_df)
     
