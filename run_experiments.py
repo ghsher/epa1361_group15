@@ -20,11 +20,11 @@ if __name__ == "__main__":
                         prog='run_experiments',
                         description='Performs IJssel River water basin model runs')
     parser.add_argument('-M', '--mode',
-                        default='vulnerability',
+                        default='base_case',
                         required=False)         
     parser.add_argument('-N', '--num_scenarios',
                         type=int,
-                        default=None,
+                        default=0,
                         required=False)
     args = parser.parse_args()
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     #                 that fit within the PRIM box from the initial base_case run
 
     scenarios = None
-    N_scenarios = int(args.num_scenarios)
+    N_scenarios = args.num_scenarios
 
     # Set parameters for experiments based on program mode
     if args.mode == 'base_case':
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         policies.append(Policy("Base Case", **{L.name: 0 for L in dike_model.levers},))
 
         # 100000 scenarios: limited by compute time
-        if N_scenarios is None:
+        if N_scenarios == 0:
             N_scenarios = 100000
 
     elif args.mode == 'robustness':
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
         # 1000 scenarios: limited by compute time x 50 policies, but a
         # large number is not needed, as the goal is not scenario search
-        if N_scenarios is None:
+        if N_scenarios == 0:
             N_scenarios = 1000
 
     elif args.mode == 'vulnerability':
