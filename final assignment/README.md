@@ -62,10 +62,7 @@ An annotated `tree` of the current directory is provided. Below, we explain the 
 ├── open_exploration__scenario_diversity_scoring.py
 ├── optimization__seeded_fixed_scenario.py
 ├── Directed Search.ipynb
-├── Policy Robustness-Copy1.ipynb
 ├── Policy Robustness.ipynb
-├── policy_robustness_old.ipynb
-├── Robustness_DS.ipynb
 # Library / Function Definition Files
 ├── set_diversity.py
 # Other
@@ -197,7 +194,7 @@ python optimization__seeded_fixed_scenario.py`
 <span style="color:red">**WARNING**:</span> For some reason (we suspect it might be due to how seeds are handled in the IJssel River model itself?), the policy sets produced in this file change on every run. The larger, filtered set is with >95% the same, with just a few policies that are on the edge of passing our constraints sometimes making it and sometimes not. The "diverse 50" set thus varies quite highly on each run due to these small changes in the input set to its diversity serach.
 
 **Instructions:** 
-Open as a Jupyter Notebook and run from top to bottom. **Plotting the convergence graphs takes 5-10 minutes, so can be commented out.**
+Open as a Jupyter Notebook and run from top to bottom. **Calculating the convergence metrics takes 5-10 minutes, so can be commented out (also comment out the following cell that plots the metrics).**
 
 **Required Input:** A set of results from the optimization process, above, and the table of scenarios in `selected_scenarios.csv` for which that optimization process was run.
 
