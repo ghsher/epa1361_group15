@@ -74,7 +74,3 @@ if __name__ == "__main__":
                 filename_end = f'__scen{scenario.name}__seed{i}.csv'
                 result.to_csv(filename_start + 'results' + filename_end)
                 convergence.to_csv(filename_start + 'convergence' + filename_end)
-        
-            scenario_results = results[-5:]
-            merged_policies = epsilon_nondominated(scenario_results, espilon, problem)
-            merged_policies.to_csv(f'./output/POLICY_SEARCH__merged__scen{scenario.name}.csv')
