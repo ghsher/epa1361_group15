@@ -7,7 +7,6 @@ distances between given pairs was calculated more then once.
 
 """
 import itertools
-
 import numpy as np
 
 
