@@ -156,6 +156,28 @@ python open_exploraion__scenario_diversity_scoring.py
 
 **Required Input:** A combined and PRIM-filtered experimental results table, as produced in the previous file in this step.
 
+##### Step 3c: Feature Scoring & Dimensional Stacking
+
+**File:** [Feature Scoring & Dimensional Stacking.ipynb](Feature Scoring & Dimensional Stacking.ipynb) 
+
+**Purpose & Output:** 
+* Feature Scoring: Generating a heatmap that quantifies the degree of correlation between each uncertainty and outcomes of interest.
+* Dimensional Stacking: Producing multiple pivot plots visualizing how uncertainty response varies in the high-dimensional parameter space.
+
+**Instructions:** Open as a Jupyter Notebook and read results, or start a kernel and run from top to bottom.
+
+**Required Input:** A valid experimental results file, likely the `base_case` file produced in Step 1.
+
+##### Step 3d: Global Sensitivity Analysis
+
+**File:** [Global Sensitivity Analysis.ipynb](Global Sensitivity Analysis.ipynb) 
+
+**Purpose & Output:** 
+* Creating multiple plots visualizing the metrics from Sobol analysis with a focus on S1, ST, and confidence intervals from a plethora of outcomes.
+
+**Instructions:** Open as a Jupyter Notebook and read results, or start a kernel and run from top to bottom.
+
+
 ### Step 4: Multi-Scenario, Multi-Objective Robust Policy Search
 
 
