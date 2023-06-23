@@ -123,4 +123,5 @@ fig = plt.gcf()
 fig.set_size_inches((12, 20))
 
 plt.savefig('img/selected_scenarios__outcome_plot.png')
-plt.show()
+# UNCOMMENT TO SHOW PLOT ON FILE RUN:
+# plt.show()
