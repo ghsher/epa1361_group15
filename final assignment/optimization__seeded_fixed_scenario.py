@@ -1,13 +1,17 @@
+import pandas as pd
+
 from ema_workbench import (
     MultiprocessingEvaluator,
     Scenario,
 )
-
-from ema_workbench.em_framework.optimization import EpsilonProgress, ArchiveLogger
+from ema_workbench.em_framework.optimization import (
+    EpsilonProgress,
+    ArchiveLogger,
+    epsilon_nondominated,
+    to_problem,
+)
 from ema_workbench.util import ema_logging
-from ema_workbench.em_framework.optimization import epsilon_nondominated, to_problem
 
-import pandas as pd
 from problem_formulation import get_model_for_problem_formulation
 
 

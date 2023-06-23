@@ -2,7 +2,11 @@
 Created on Wed Mar 21 17:34:11 2018
 
 @author: ciullo
+edited by Group 15 for EPA1361, 2023
 """
+
+import numpy as np
+
 from ema_workbench import (
     Model,
     CategoricalParameter,
@@ -10,10 +14,8 @@ from ema_workbench import (
     IntegerParameter,
     RealParameter,
 )
+
 from dike_model_function import DikeNetwork  # @UnresolvedImport
-
-import numpy as np
-
 
 def sum_over(*args):
     numbers = []
