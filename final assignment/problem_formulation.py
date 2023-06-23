@@ -6,7 +6,6 @@ Created on Wed Mar 21 17:34:11 2018
 from ema_workbench import (
     Model,
     CategoricalParameter,
-    ArrayOutcome,
     ScalarOutcome,
     IntegerParameter,
     RealParameter,
@@ -40,29 +39,14 @@ def get_model_for_problem_formulation(problem_formulation_id):
 
     Parameters
     ----------
-    problem_formulation_id : int {0, ..., 7}
-                             problem formulations differ with respect to the objectives
-                             DEFAULT:
-                             0: Total cost, and casualties
-                             1: Expected damages, costs, and casualties
-                             2: expected damages, dike investment costs, rfr costs, evacuation cost, and casualties
-                             3: costs and casualties disaggregated over dike rings, and room for the river and evacuation costs
-                             4: Expected damages, dike investment cost and casualties disaggregated over dike rings and room for the river and evacuation costs
-                             5: disaggregate over time and space
-                             CUSTOM:
-                             6:
-                             7:
-
-    Notes
-    -----
-    problem formulations 4 and 5 rely on ArrayOutcomes and thus cannot straightforwardly
-    be used in optimizations
-
+    problem_formulation_id : str
+                            'A4 Only': Total Cost, Damges, and Deaths and A4 Damages and Deaths
+                            'All Dikes': Total Cost, Damages, and Deaths plus Damages and Deaths for each DR
     """
     
     # Load the model:
     function = DikeNetwork()
-    # workbench model:
+    # EMA workbench model:
     dike_model = Model("dikesnet", function=function)
 
     dike_model.uncertainties = [
